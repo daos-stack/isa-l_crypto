@@ -168,42 +168,42 @@ pipeline {
                         }
                     }
                 }
-                stage('Build on Ubuntu 18.04') {
-                    agent {
-                        dockerfile {
-                            filename 'Dockerfile.ubuntu.18.04'
-                            label 'docker_runner'
-                            additionalBuildArgs  '--build-arg UID=$(id -u) ' +
-                                                 "--build-arg CACHEBUST=${currentBuild.startTimeInMillis}"
-                        }
-                    }
-                    steps {
-                        sh '''rm -rf artifacts/ubuntu18.04/
-                              mkdir -p artifacts/ubuntu18.04/
-                              : "${DEBEMAIL:="$env.DAOS_EMAIL"}"
-                              : "${DEBFULLNAME:="$env.DAOS_FULLNAME"}"
-                              export DEBEMAIL
-                              export DEBFULLNAME
-                              make debs'''
-                    }
-                    post {
-                        success {
-                            sh '''ln -v \
-                                   _topdir/BUILD/*{.build,.changes,.deb,.dsc,.gz,.xz} \
-                                   artifacts/ubuntu18.04/
-                                  pushd artifacts/ubuntu18.04/
-                                    dpkg-scanpackages . /dev/null | \
-                                      gzip -9c > Packages.gz
-                                  popd'''
-                            archiveArtifacts artifacts: 'artifacts/ubuntu18.04/**'
-                        }
-                        failure {
-                            sh script: "cat _topdir/BUILD/*.build",
-                               returnStatus: true
-                            archiveArtifacts artifacts: 'artifacts/ubuntu18.04/**'
-                        }
-                    }
-                }
+//                stage('Build on Ubuntu 18.04') {
+//                    agent {
+//                        dockerfile {
+//                            filename 'Dockerfile.ubuntu.18.04'
+//                            label 'docker_runner'
+//                            additionalBuildArgs  '--build-arg UID=$(id -u) ' +
+//                                                 "--build-arg CACHEBUST=${currentBuild.startTimeInMillis}"
+//                        }
+//                    }
+//                    steps {
+//                        sh '''rm -rf artifacts/ubuntu18.04/
+//                              mkdir -p artifacts/ubuntu18.04/
+//                              : "${DEBEMAIL:="$env.DAOS_EMAIL"}"
+//                              : "${DEBFULLNAME:="$env.DAOS_FULLNAME"}"
+//                              export DEBEMAIL
+//                              export DEBFULLNAME
+//                              make debs'''
+//                    }
+//                    post {
+//                        success {
+//                            sh '''ln -v \
+//                                   _topdir/BUILD/*{.build,.changes,.deb,.dsc,.gz,.xz} \
+//                                   artifacts/ubuntu18.04/
+//                                  pushd artifacts/ubuntu18.04/
+//                                    dpkg-scanpackages . /dev/null | \
+//                                      gzip -9c > Packages.gz
+//                                  popd'''
+//                            archiveArtifacts artifacts: 'artifacts/ubuntu18.04/**'
+//                        }
+//                        failure {
+//                            sh script: "cat _topdir/BUILD/*.build",
+//                               returnStatus: true
+//                            archiveArtifacts artifacts: 'artifacts/ubuntu18.04/**'
+//                        }
+//                    }
+//                }
             }
         }
     }
