@@ -3,14 +3,25 @@
 %if 0%{?suse_version} <= 1320
 %define make_build  %{__make} %{?_smp_mflags}
 %endif
-
+%if 0%{?suse_version} >= 1315
+%define isal_libname libisal_crypto2
+%define isal_devname libisal_crypto-devel
+%else
+%define isal_libname libisa-l_crypto
+%define isal_devname libisa-l-_crypto-devel
+%endif
+    
 Name:		isa-l_crypto
 Version:	2.21.0
-Release:	1%{?dist}
+Release:	2%{?dist}
 
 Summary:	Intelligent Storage Acceleration Library Crypto Version
 
+%if 0%{?suse_version} >= 1315
+Group: Development/Libraries/C and C++
+%else
 Group:		Development/Libraries
+%endif
 License:	BSD-3-Clause
 URL:		https://github.com/01org/isa-l_crypto/wiki
 Source0:        https://github.com/01org/%{name}/archive/v%{version}.tar.gz
@@ -21,14 +32,15 @@ BuildRequires: yasm
 BuildRequires: autoconf, automake, libtool
 
 %description
-The igzip utility.
+ISA-L_crypto is a collection of optimized low-level functions
+targeting storage applications.
 
-%package -n libisa-l_crypto
+%package -n %{isal_libname}
 Summary: Dynamic library for isa-l_crypto functions
 License: BSD-3-Clause
 Obsoletes: %{name} < %{version}
 
-%description -n libisa-l_crypto
+%description -n %{isal_libname}
 ISA-L_crypto is a collection of optimized low-level functions
 targeting storage applications. ISA-L_crypto includes:
 - Multi-buffer hashes - run multiple hash jobs together on one core
@@ -39,13 +51,13 @@ SHA1, SHA256, SHA512, MD5)
 - AES - block ciphers (XTS, GCM, CBC)
 - Rolling hash - Hash input in a window which moves through the input
 
-%package -n libisa-l_crypto-devel
+%package -n %{isal_devname}
 Summary:	ISA-L_CRYPTO devel package
-Requires:	lib%{name}%{?_isa} = %{version}
-Provides:	lib%{name}-static%{?_isa} = %{version}
+Requires:	%{isal_libname}%{?_isa} = %{version}
+Provides:	%{isal_libname}-static%{?_isa} = %{version}
 
-%description -n libisa-l_crypto-devel
-ISA-L_CRYPTO devel
+%description -n %{isal_devname}
+Development files for the %{isal_libname} library.
 
 %prep
 %autosetup -p1
@@ -62,14 +74,25 @@ fi
 %make_install
 find %{?buildroot} -name *.la -print0 | xargs -r0 rm -f
 
-%files -n libisa-l_crypto
+%if 0%{?suse_version} >= 01315
+%post -n %{isal_libname} -p /sbin/ldconfig
+%postun -n %{isal_libname} -p /sbin/ldconfig
+%else
+%post -p /sbin/ldconfig
+%postun -p /sbin/ldconfig
+%endif    
+
+%files -n %{isal_libname}
 %{_libdir}/*.so.*
 
-%files -n libisa-l_crypto-devel
+%files -n %{isal_devname}
 %{_includedir}/*
 %{_libdir}/*.so
 %{_libdir}/*.a
 
 %changelog
+* Wed Oct 02 2019 John E. Malmberg <john.e.malmberg@intel> - 2.21.0-2
+- Fix some SUSE rpmlint packaging complaints
+
 * Fri Aug 16 2019 Ryon Jensen <ryon.jensen@intel> - 2.21.0-1
 - initial package
