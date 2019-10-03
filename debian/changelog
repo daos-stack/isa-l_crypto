@@ -1,0 +1,8 @@
+libisal-crypto (2.21.0-1) unstable; urgency=medium
+
+  [ John Malmberg ]
+  * Patched Upstream release
+  * Experimental build for daos-stack project
+
+ -- John Malmberg <john.e.malmberg@intel.com>  Wed, 02 Oct 2019 07:46:00 +0000
+

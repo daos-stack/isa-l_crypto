@@ -8,12 +8,12 @@
 %define isal_devname libisal_crypto-devel
 %else
 %define isal_libname libisa-l_crypto
-%define isal_devname libisa-l-_crypto-devel
+%define isal_devname libisa-l_crypto-devel
 %endif
     
 Name:		isa-l_crypto
 Version:	2.21.0
-Release:	2%{?dist}
+Release:	3%{?dist}
 
 Summary:	Intelligent Storage Acceleration Library Crypto Version
 
@@ -91,6 +91,9 @@ find %{?buildroot} -name *.la -print0 | xargs -r0 rm -f
 %{_libdir}/*.a
 
 %changelog
+* Wed Oct 02 2019 John E. Malmberg <john.e.malmberg@intel> - 2.21.0-3
+- Fix the Red Hat family devel package name.
+
 * Wed Oct 02 2019 John E. Malmberg <john.e.malmberg@intel> - 2.21.0-2
 - Fix some SUSE rpmlint packaging complaints
 
