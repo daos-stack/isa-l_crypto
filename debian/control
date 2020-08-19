@@ -14,7 +14,7 @@ Package: libisal-crypto-dev
 Section: libdevel
 Architecture: amd64 kfreebsd-amd64
 Depends:
- libisal2 (= ${binary:Version}),
+ libisal2-crypto (= ${binary:Version}),
  ${misc:Depends},
 Description: Intel(R) Intelligent Storage Acceleration Library Crypto - devel files
  Collection of optimized low-level functions targeting storage applications.
