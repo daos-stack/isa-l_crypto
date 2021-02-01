@@ -12,8 +12,8 @@
 %endif
     
 Name:		isa-l_crypto
-Version:	2.21.0
-Release:	3%{?dist}
+Version:	2.23.0
+Release:	1%{?dist}
 
 Summary:	Intelligent Storage Acceleration Library Crypto Version
 
@@ -89,8 +89,13 @@ find %{?buildroot} -name *.la -print0 | xargs -r0 rm -f
 %{_includedir}/*
 %{_libdir}/*.so
 %{_libdir}/*.a
+%{_libdir}/pkgconfig/libisal_crypto.pc
 
 %changelog
+* Mon Feb 01 2021 Brian J. Murrell <brian.murrell@intel> - 2.23.0-1
+- Update to new version
+- Add %%{_libdir}/pkgconfig/libisal_crypto.pc to -devel package
+
 * Wed Oct 02 2019 John E. Malmberg <john.e.malmberg@intel> - 2.21.0-3
 - Fix the Red Hat family devel package name.
 

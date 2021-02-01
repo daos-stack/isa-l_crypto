@@ -2,6 +2,10 @@
 
 #export DH_VERBOSE = 1
 
+export DPKG_GENSYMBOLS_CHECK_LEVEL=4
+
+UPSTREAM_GIT := https://github.com/01org/isa-l_crypto.git
+
 export DEB_BUILD_MAINT_OPTIONS = hardening=+all
 
 %:
