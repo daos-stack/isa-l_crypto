@@ -19,6 +19,10 @@ jobs:
         #distro: [centos.7, centos.8, leap.15, ubuntu.20.04]
         distro: [epel-7-x86_64]
     steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+      with:
+        submodules: true
     - name: Build ${{ matrix.distro }} RPMs
       run: bash -c "set -ex;
                     pwd;
