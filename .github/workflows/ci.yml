@@ -8,6 +8,7 @@ on:
 
 jobs:
   Build_RPMs:
+    name: Build RPMs
     runs-on: ubuntu-latest
     container:
       image: fedorapackaging/builder:fedora32
@@ -19,10 +20,10 @@ jobs:
         distro: [epel-7-x86_64]
     steps:
     - name: Build ${{ matrix.distro }} RPMs
-      run: bash -c "set -x; pwd; ls -l; rpm -q mock; id; ls -ld .; rm -rf artifacts/${{ matrix.distro }}/; mkdir -p artifacts/${{ matrix.distro }}/; make CHROOT_NAME=${{ matrix.distro }} chrootbuild; find /var/lib/mock/epel-7-x86_64/result/ | xargs ls -ld"
+      run: bash -c "set -ex; pwd; ls -l; rpm -q mock; id; ls -ld .; rm -rf artifacts/${{ matrix.distro }}/; mkdir -p artifacts/${{ matrix.distro }}/; make CHROOT_NAME=${{ matrix.distro }} chrootbuild; find /var/lib/mock/epel-7-x86_64/result/ | xargs ls -ld"
 
   Build_Docker_Image:
-    name: Build
+    name: Build Docker Image
     runs-on: ubuntu-latest
     steps:
     - name: Checkout code
@@ -51,7 +52,7 @@ jobs:
                           --build-arg REPO_UBUNTU_20_04=repository/daos-stack-ubuntu-20.04-x86_64-stable-local
                           --build-arg REPO_GROUP_LEAP15=repository/daos-stack-external-leap-15-x86_64-stable-group
   Old_Build_RPMs:
-    name: Build
+    name: Old Build RPMs
     needs: Build_Docker_Image
     runs-on: ubuntu-latest
     strategy:
@@ -81,4 +82,4 @@ jobs:
                       -w $PWD
                       -v $PWD:$PWD:rw,z
                       mockbuild/daos
-                      bash -c "set -x; pwd; ls -l; rpm -q mock; id; ls -ld .; rm -rf artifacts/${{ matrix.distro }}/; mkdir -p artifacts/${{ matrix.distro }}/; make CHROOT_NAME=${{ matrix.distro }} chrootbuild; find /var/lib/mock/epel-7-x86_64/result/ | xargs ls -ld"
+                      bash -c "set -ex; pwd; ls -l; rpm -q mock; id; ls -ld .; rm -rf artifacts/${{ matrix.distro }}/; mkdir -p artifacts/${{ matrix.distro }}/; make CHROOT_NAME=${{ matrix.distro }} chrootbuild; find /var/lib/mock/epel-7-x86_64/result/ | xargs ls -ld"
