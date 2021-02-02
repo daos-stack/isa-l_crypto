@@ -29,6 +29,7 @@ jobs:
                           -t mockbuild/daos
                           --build-arg NOBUILD=1
                           --build-arg JENKINS_URL=https://build.hpdd.intel.com/
+                          --build-arg UID=1001
                           --build-arg CACHEBUST=1612216390333
                           --build-arg REPO_URL=https://repo.dc.hpdd.intel.com/
                           --build-arg REPO_EL7=repository/daos-stack-el-7-x86_64-stable-local
@@ -60,7 +61,8 @@ jobs:
         restore-keys: daos-${{ env.CACHE_KEY }}-
         skip-save: true
     - name: Build ${{ matrix.distro }} RPMs
-      run: docker run --group-add mock
+      run: docker run -u 1001:1001
+                       --group-add mock
                       --cap-add=SYS_ADMIN
                       --privileged=true
                       -w $PWD
