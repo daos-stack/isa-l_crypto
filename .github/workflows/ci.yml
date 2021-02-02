@@ -45,7 +45,7 @@ jobs:
       fail-fast: false
       matrix:
         #distro: [centos.7, centos.8, leap.15, ubuntu.20.04]
-        distro: [centos.7]
+        distro: [epel-7-x86_64]
     steps:
     - name: Checkout code
       uses: actions/checkout@v2
@@ -68,4 +68,4 @@ jobs:
                       -w $PWD
                       -v $PWD:$PWD:rw,z
                       mockbuild/daos
-                      bash -c "set -x; pwd; ls -l; rpm -q mock; id; ls -ld .; rm -rf artifacts/centos7/; mkdir -p artifacts/centos7/; make CHROOT_NAME=epel-7-x86_64 chrootbuild"
+                      bash -c "set -x; pwd; ls -l; rpm -q mock; id; ls -ld .; rm -rf artifacts/${{ matrix.distro }}/; mkdir -p artifacts/${{ matrix.distro }}/; make CHROOT_NAME=${{ matrix.distro }} chrootbuild; find /var/lib/mock/epel-7-x86_64/result/ | xargs ls -ld"
