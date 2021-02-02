@@ -11,7 +11,7 @@ jobs:
     runs-on: ubuntu-latest
     container:
       image: fedorapackaging/builder:fedora32
-      options: -u 1001:1001 --group-add mock --cap-add=SYS_ADMIN --privileged=true -w $PWD -v $PWD:$PWD:rw,z
+      options: -u 1001:1001 --group-add mock --cap-add=SYS_ADMIN --privileged=true
     strategy:
       fail-fast: false
       matrix:
