@@ -25,16 +25,13 @@ jobs:
         submodules: true
     - name: Build ${{ matrix.distro }} RPMs
       run: bash -c "set -ex;
-                    if ! chroot / id >/dev/null; then
-                        echo \"Unprivilegded container!!\";
-                        exit 1;
-                    fi;
                     rm -rf artifacts/${{ matrix.distro }}/;
                     mkdir -p artifacts/${{ matrix.distro }}/;
                     if ! make CHROOT_NAME=${{ matrix.distro }} chrootbuild; then
                         rc=\${PIPESTATUS[0]};
                         mockroot=/var/lib/mock/${{ matrix.distro }};
                         if ! ls -l \$mockroot/result/; then
+                            rpm -qip --requires  _topdir/SRPMS/*.f*.src.rpm || true;
                             find /var/lib/mock/ | xargs ls -ld;
                             exit 1;
                         fi;
@@ -115,13 +112,10 @@ jobs:
                       -v $PWD:$PWD:rw,z
                       mockbuild/daos
                       bash -c "set -ex;
-                               if ! chroot / id >/dev/null; then
-                                   echo \"Unprivilegded container!!\";
-                                   exit 1;
-                               fi;
                                rm -rf artifacts/${{ matrix.distro }}/;
                                mkdir -p artifacts/${{ matrix.distro }}/;
                                make CHROOT_NAME=${{ matrix.distro }} chrootbuild;
+                               rpm -qip --requires  _topdir/SRPMS/*.f*.src.rpm || true;
                                (cd /var/lib/mock/${{ matrix.distro }}/result/ &&
                                 cp -r . \$OLDPWD/artifacts/${{ matrix.distro }}/);
                                createrepo artifacts/${{ matrix.distro }}/;
