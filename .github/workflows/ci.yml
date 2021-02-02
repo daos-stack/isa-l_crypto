@@ -25,6 +25,7 @@ jobs:
         submodules: true
     - name: Build ${{ matrix.distro }} RPMs
       run: bash -c "set -ex;
+                    id;
                     rm -rf artifacts/${{ matrix.distro }}/;
                     mkdir -p artifacts/${{ matrix.distro }}/;
                     if ! make CHROOT_NAME=${{ matrix.distro }} chrootbuild; then
@@ -112,6 +113,7 @@ jobs:
                       -v $PWD:$PWD:rw,z
                       mockbuild/daos
                       bash -c "set -ex;
+                               id;
                                rm -rf artifacts/${{ matrix.distro }}/;
                                mkdir -p artifacts/${{ matrix.distro }}/;
                                make CHROOT_NAME=${{ matrix.distro }} chrootbuild;
