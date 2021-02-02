@@ -20,7 +20,16 @@ jobs:
         distro: [epel-7-x86_64]
     steps:
     - name: Build ${{ matrix.distro }} RPMs
-      run: bash -c "set -ex; pwd; ls -l; rpm -q mock; id; ls -ld .; rm -rf artifacts/${{ matrix.distro }}/; mkdir -p artifacts/${{ matrix.distro }}/; make CHROOT_NAME=${{ matrix.distro }} chrootbuild; find /var/lib/mock/epel-7-x86_64/result/ | xargs ls -ld"
+      run: bash -c "set -ex;
+                    pwd;
+                    ls -l;
+                    rpm -q mock;
+                    id;
+                    ls -ld .;
+                    rm -rf artifacts/${{ matrix.distro }}/;
+                    mkdir -p artifacts/${{ matrix.distro }}/;
+                    make CHROOT_NAME=${{ matrix.distro }} chrootbuild;
+                    find /var/lib/mock/epel-7-x86_64/result/ | xargs ls -ld"
 
   Build_Docker_Image:
     name: Build Docker Image
@@ -82,4 +91,17 @@ jobs:
                       -w $PWD
                       -v $PWD:$PWD:rw,z
                       mockbuild/daos
-                      bash -c "set -ex; pwd; ls -l; rpm -q mock; id; ls -ld .; rm -rf artifacts/${{ matrix.distro }}/; mkdir -p artifacts/${{ matrix.distro }}/; make CHROOT_NAME=${{ matrix.distro }} chrootbuild; find /var/lib/mock/epel-7-x86_64/result/ | xargs ls -ld"
+                      bash -c "set -ex;
+                               rm -rf artifacts/${{ matrix.distro }}/;
+                               mkdir -p artifacts/${{ matrix.distro }}/;
+                               make CHROOT_NAME=${{ matrix.distro }} chrootbuild;
+                               (cd /var/lib/mock/${{ matrix.distro }}/result/ &&
+                                cp -r . $OLDPWD/artifacts/${{ matrix.distro }}/) createrepo artifacts/${{ matrix.distro }}/
+                               find artifacts/ | xargs ls -ld"
+    - name: Show artifacts
+      run: echo "CACHE_KEY=$(date +%j)" >> $GITHUB_ENV
+    - uses: actions/upload-artifact@v2
+      with:
+        name: artifacts
+        path: artifacts
+        retention-days: 1
