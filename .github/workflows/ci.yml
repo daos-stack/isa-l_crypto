@@ -25,15 +25,10 @@ jobs:
         submodules: true
     - name: Build ${{ matrix.distro }} RPMs
       run: bash -c "set -ex;
-                    pwd;
-                    ls -l;
-                    rpm -q mock;
-                    id;
-                    ls -ld .;
-                    if ! ip link add dummy0 type dummy >/dev/null; then
+                    if ip link add dummy0 type dummy >/dev/null; then
                         ip link delete dummy0 >/dev/null;
                     else
-                        echo "Unprivilegded container!!";
+                        echo \"Unprivilegded container!!\";
                         exit 1;
                     fi;
                     rm -rf artifacts/${{ matrix.distro }}/;
