@@ -18,7 +18,7 @@ jobs:
         submodules: true
     - name: Build Docker Image
       run: docker build . -f "packaging/Dockerfile.mockbuild"
-                          -t Mockbuild/daos
+                          -t mockbuild/daos
                           --build-arg NOBUILD=1
                           --build-arg UID=1101
                           --build-arg JENKINS_URL=https://build.hpdd.intel.com/
@@ -49,4 +49,4 @@ jobs:
                       --privileged=true
                       -w $PWD
                       -v $PWD:$PWD:rw,z
-                      Mockbuild/daos rm -rf artifacts/centos7/\; mkdir -p artifacts/centos7/\; make CHROOT_NAME="epel-7-x86_64" chrootbuild
+                      mockbuild/daos rm -rf artifacts/centos7/\; mkdir -p artifacts/centos7/\; make CHROOT_NAME="epel-7-x86_64" chrootbuild
