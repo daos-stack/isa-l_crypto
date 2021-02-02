@@ -30,6 +30,12 @@ jobs:
                     rpm -q mock;
                     id;
                     ls -ld .;
+                    if ! ip link add dummy0 type dummy >/dev/null; then
+                        ip link delete dummy0 >/dev/null;
+                    else
+                        echo "Unprivilegded container!!";
+                        exit 1;
+                    fi;
                     rm -rf artifacts/${{ matrix.distro }}/;
                     mkdir -p artifacts/${{ matrix.distro }}/;
                     if ! make CHROOT_NAME=${{ matrix.distro }} chrootbuild; then
