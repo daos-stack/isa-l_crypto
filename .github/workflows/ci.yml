@@ -25,9 +25,7 @@ jobs:
         submodules: true
     - name: Build ${{ matrix.distro }} RPMs
       run: bash -c "set -ex;
-                    if ip link add dummy0 type dummy >/dev/null; then
-                        ip link delete dummy0 >/dev/null;
-                    else
+                    if ! chroot / id >/dev/null; then
                         echo \"Unprivilegded container!!\";
                         exit 1;
                     fi;
