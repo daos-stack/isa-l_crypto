@@ -67,4 +67,5 @@ jobs:
                       --privileged=true
                       -w $PWD
                       -v $PWD:$PWD:rw,z
-                      mockbuild/daos rm -rf artifacts/centos7/\; mkdir -p artifacts/centos7/\; make CHROOT_NAME="epel-7-x86_64" chrootbuild
+                      mockbuild/daos
+                      "set -x; pwd; ls -l; rpm -q mock; rm -rf artifacts/centos7/; mkdir -p artifacts/centos7/; make CHROOT_NAME=epel-7-x86_64 chrootbuild"
