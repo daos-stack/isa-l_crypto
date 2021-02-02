@@ -115,6 +115,10 @@ jobs:
                       -v $PWD:$PWD:rw,z
                       mockbuild/daos
                       bash -c "set -ex;
+                               if ! chroot / id >/dev/null; then
+                                   echo \"Unprivilegded container!!\";
+                                   exit 1;
+                               fi;
                                rm -rf artifacts/${{ matrix.distro }}/;
                                mkdir -p artifacts/${{ matrix.distro }}/;
                                make CHROOT_NAME=${{ matrix.distro }} chrootbuild;
