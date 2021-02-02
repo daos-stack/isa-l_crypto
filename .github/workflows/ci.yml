@@ -16,6 +16,14 @@ jobs:
       uses: actions/checkout@v2
       with:
         submodules: true
+    - name: Set cachekey
+      run: echo "CACHE_KEY=$(date +%j)" >> $GITHUB_ENV
+    # https://github.com/marketplace/actions/docker-layer-caching
+    - uses: satackey/action-docker-layer-caching@v0.0.11
+      continue-on-error: true
+      with:
+        key: daos-${{ env.CACHE_KEY }}-{hash}
+        restore-keys: daos-${{ env.CACHE_KEY }}-
     - name: Build Docker Image
       run: docker build . -f "packaging/Dockerfile.mockbuild"
                           -t mockbuild/daos
@@ -43,6 +51,15 @@ jobs:
       uses: actions/checkout@v2
       with:
         submodules: true
+    - name: Set cache key
+      run: echo "CACHE_KEY=$(date +%j)" >> $GITHUB_ENV
+     # https://github.com/marketplace/actions/docker-layer-caching
+    - uses: satackey/action-docker-layer-caching@v0.0.11
+      continue-on-error: true
+      with:
+        key: daos-${{ env.CACHE_KEY }}-{hash}
+        restore-keys: daos-${{ env.CACHE_KEY }}-
+        skip-save: true
     - name: Build ${{ matrix.distro }} RPMs
       run: docker run -t -d -u 1101:1101
                       --group-add mock
