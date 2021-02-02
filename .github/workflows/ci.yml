@@ -1,0 +1,52 @@
+name: Workflow
+
+on:
+   push:
+     branches:
+       - master
+   pull_request:
+
+jobs:
+
+  Build_Docker_Image:
+    name: Build
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+      with:
+        submodules: true
+    - name: Build Docker Image
+      run: docker build . -f "packaging/Dockerfile.mockbuild"
+                          -t Mockbuild/daos
+                          --build-arg NOBUILD=1
+                          --build-arg UID=1101
+                          --build-arg JENKINS_URL=https://build.hpdd.intel.com/
+                          --build-arg CACHEBUST=1612216390333
+                          --build-arg REPO_URL=https://repo.dc.hpdd.intel.com/
+                          --build-arg REPO_EL7=repository/daos-stack-el-7-x86_64-stable-local
+                          --build-arg REPO_EL8=repository/daos-stack-el-8-x86_64-stable-local
+                          --build-arg REPO_LOCAL_LEAP15=repository/daos-stack-leap-15-x86_64-stable-local
+                          --build-arg REPO_UBUNTU_20_04=repository/daos-stack-ubuntu-20.04-x86_64-stable-local
+                          --build-arg REPO_GROUP_LEAP15=repository/daos-stack-external-leap-15-x86_64-stable-group
+  Build_RPMs:
+    name: Build
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        #distro: [centos.7, centos.8, leap.15, ubuntu.20.04]
+        distro: [centos.7]
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+      with:
+        submodules: true
+    - name: Build ${{ matrix.distro }} RPMs
+      run: docker run -t -d -u 1101:1101
+                      --group-add mock
+                      --cap-add=SYS_ADMIN
+                      --privileged=true
+                      -w $PWD
+                      -v $PWD:$PWD:rw,z
+                      Mockbuild/daos rm -rf artifacts/centos7/\; mkdir -p artifacts/centos7/\; make CHROOT_NAME="epel-7-x86_64" chrootbuild
