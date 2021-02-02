@@ -1,0 +1,131 @@
+name: Workflow
+
+on:
+   push:
+     branches:
+       - master
+   pull_request:
+
+jobs:
+  Build_RPMs:
+    name: Build RPMs
+    runs-on: ubuntu-latest
+    container:
+      image: fedorapackaging/builder:fedora32
+      options: -u 1001:1001 --group-add mock --cap-add=SYS_ADMIN --privileged=true
+    strategy:
+      fail-fast: false
+      matrix:
+        #distro: [centos.7, centos.8, leap.15, ubuntu.20.04]
+        distro: [epel-7-x86_64]
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+      with:
+        submodules: true
+    - name: Build ${{ matrix.distro }} RPMs
+      run: bash -c "set -ex;
+                    id;
+                    rm -rf artifacts/${{ matrix.distro }}/;
+                    mkdir -p artifacts/${{ matrix.distro }}/;
+                    if ! make CHROOT_NAME=${{ matrix.distro }} chrootbuild; then
+                        rc=\${PIPESTATUS[0]};
+                        mockroot=/var/lib/mock/${{ matrix.distro }};
+                        if ! ls -l \$mockroot/result/; then
+                            rpm -qip --requires  _topdir/SRPMS/*.f*.src.rpm || true;
+                            find /var/lib/mock/ | xargs ls -ld;
+                            exit 1;
+                        fi;
+                        cat \$mockroot/result/{root,build}.log;
+                        artdir=artifacts/${{ matrix.distro }};
+                        cp -af _topdir/SRPMS \$artdir;
+                        (cd \$mockroot/result/ &&
+                         cp -r . \$artdir);
+                        exit \$rc;
+                    fi;
+                    find /var/lib/mock/${{ matrix.distro }}/result/ | xargs ls -ld"
+    - name: Show artifacts
+      run: find artifacts/ | xargs ls -ld
+    - uses: actions/upload-artifact@v2
+      with:
+        name: artifacts
+        path: artifacts/**
+        retention-days: 1     
+
+  Build_Docker_Image:
+    name: Build Docker Image
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+      with:
+        submodules: true
+    - name: Set cachekey
+      run: echo "CACHE_KEY=$(date +%j)" >> $GITHUB_ENV
+    # https://github.com/marketplace/actions/docker-layer-caching
+    - uses: satackey/action-docker-layer-caching@v0.0.11
+      continue-on-error: true
+      with:
+        key: daos-${{ env.CACHE_KEY }}-{hash}
+        restore-keys: daos-${{ env.CACHE_KEY }}-
+    - name: Build Docker Image
+      run: docker build . -f "packaging/Dockerfile.mockbuild"
+                          -t mockbuild/daos
+                          --build-arg NOBUILD=1
+                          --build-arg JENKINS_URL=https://build.hpdd.intel.com/
+                          --build-arg UID=1001
+                          --build-arg CACHEBUST=1612216390333
+                          --build-arg REPO_URL=https://repo.dc.hpdd.intel.com/
+                          --build-arg REPO_EL7=repository/daos-stack-el-7-x86_64-stable-local
+                          --build-arg REPO_EL8=repository/daos-stack-el-8-x86_64-stable-local
+                          --build-arg REPO_LOCAL_LEAP15=repository/daos-stack-leap-15-x86_64-stable-local
+                          --build-arg REPO_UBUNTU_20_04=repository/daos-stack-ubuntu-20.04-x86_64-stable-local
+                          --build-arg REPO_GROUP_LEAP15=repository/daos-stack-external-leap-15-x86_64-stable-group
+  Old_Build_RPMs:
+    name: Old Build RPMs
+    needs: Build_Docker_Image
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        #distro: [centos.7, centos.8, leap.15, ubuntu.20.04]
+        distro: [epel-7-x86_64]
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+      with:
+        submodules: true
+    - name: Set cache key
+      run: echo "CACHE_KEY=$(date +%j)" >> $GITHUB_ENV
+     # https://github.com/marketplace/actions/docker-layer-caching
+    - uses: satackey/action-docker-layer-caching@v0.0.11
+      continue-on-error: true
+      with:
+        key: daos-${{ env.CACHE_KEY }}-{hash}
+        restore-keys: daos-${{ env.CACHE_KEY }}-
+        skip-save: true
+    - name: Build ${{ matrix.distro }} RPMs
+      run: docker run -u 1001:1001
+                      --group-add mock
+                      --cap-add=SYS_ADMIN
+                      --privileged=true
+                      -w $PWD
+                      -v $PWD:$PWD:rw,z
+                      mockbuild/daos
+                      bash -c "set -ex;
+                               id;
+                               rm -rf artifacts/${{ matrix.distro }}/;
+                               mkdir -p artifacts/${{ matrix.distro }}/;
+                               make CHROOT_NAME=${{ matrix.distro }} chrootbuild;
+                               rpm -qip --requires  _topdir/SRPMS/*.f*.src.rpm || true;
+                               (cd /var/lib/mock/${{ matrix.distro }}/result/ &&
+                                cp -r . \$OLDPWD/artifacts/${{ matrix.distro }}/);
+                               createrepo artifacts/${{ matrix.distro }}/;
+                               find artifacts/ | xargs ls -ld"
+    - name: Show artifacts
+      run: find artifacts/ | xargs ls -ld
+    - uses: actions/upload-artifact@v2
+      with:
+        name: artifacts
+        path: artifacts/**
+        retention-days: 1
