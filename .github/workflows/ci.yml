@@ -30,8 +30,8 @@ jobs:
                           --build-arg REPO_UBUNTU_20_04=repository/daos-stack-ubuntu-20.04-x86_64-stable-local
                           --build-arg REPO_GROUP_LEAP15=repository/daos-stack-external-leap-15-x86_64-stable-group
   Build_RPMs:
-    name: Build_Docker_Image
-    needs: Prepare
+    name: Build
+    needs: Build_Docker_Image
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
