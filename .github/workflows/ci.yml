@@ -7,6 +7,18 @@ on:
    pull_request:
 
 jobs:
+  Build_RPMs:
+    container:
+      image: fedorapackaging/fedora32
+      options: -u 1001:1001 --group-add mock --cap-add=SYS_ADMIN --privileged=true -w $PWD -v $PWD:$PWD:rw,z
+    strategy:
+      fail-fast: false
+      matrix:
+        #distro: [centos.7, centos.8, leap.15, ubuntu.20.04]
+        distro: [epel-7-x86_64]
+    steps:
+    - name: Build ${{ matrix.distro }} RPMs
+      run: bash -c "set -x; pwd; ls -l; rpm -q mock; id; ls -ld .; rm -rf artifacts/${{ matrix.distro }}/; mkdir -p artifacts/${{ matrix.distro }}/; make CHROOT_NAME=${{ matrix.distro }} chrootbuild; find /var/lib/mock/epel-7-x86_64/result/ | xargs ls -ld"
 
   Build_Docker_Image:
     name: Build
@@ -37,7 +49,7 @@ jobs:
                           --build-arg REPO_LOCAL_LEAP15=repository/daos-stack-leap-15-x86_64-stable-local
                           --build-arg REPO_UBUNTU_20_04=repository/daos-stack-ubuntu-20.04-x86_64-stable-local
                           --build-arg REPO_GROUP_LEAP15=repository/daos-stack-external-leap-15-x86_64-stable-group
-  Build_RPMs:
+  Old_Build_RPMs:
     name: Build
     needs: Build_Docker_Image
     runs-on: ubuntu-latest
@@ -62,7 +74,7 @@ jobs:
         skip-save: true
     - name: Build ${{ matrix.distro }} RPMs
       run: docker run -u 1001:1001
-                       --group-add mock
+                      --group-add mock
                       --cap-add=SYS_ADMIN
                       --privileged=true
                       -w $PWD
