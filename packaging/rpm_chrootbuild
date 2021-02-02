@@ -14,7 +14,7 @@ wq
 EOF
     fi
 else
-    echo "Unable to update /etc/mock/"$CHROOT_NAME.cfg to remove upstream repos."
+    echo "Unable to update /etc/mock/$CHROOT_NAME.cfg to remove upstream repos."
 fi
 mkdir -p ~/.config
 echo -e "config_opts['yum.conf'] += \"\"\"\n" >> ~/.config/mock.cfg
