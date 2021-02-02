@@ -35,7 +35,10 @@ jobs:
                     if ! make CHROOT_NAME=${{ matrix.distro }} chrootbuild; then
                         rc=\${PIPESTATUS[0]};
                         mockroot=/var/lib/mock/${{ matrix.distro }};
-                        ls -l \$mockroot/result/;
+                        if ! ls -l \$mockroot/result/; then
+                            find /var/lib/mock/ | xargs ls -ld;
+                            exit 1;
+                        fi;
                         cat \$mockroot/result/{root,build}.log;
                         artdir=artifacts/${{ matrix.distro }};
                         cp -af _topdir/SRPMS \$artdir;
@@ -43,7 +46,7 @@ jobs:
                          cp -r . \$artdir);
                         exit \$rc;
                     fi;
-                    find /var/lib/mock/epel-7-x86_64/result/ | xargs ls -ld"
+                    find /var/lib/mock/${{ matrix.distro }}/result/ | xargs ls -ld"
     - name: Show artifacts
       run: find artifacts/ | xargs ls -ld
     - uses: actions/upload-artifact@v2
