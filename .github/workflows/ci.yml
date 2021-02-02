@@ -8,6 +8,7 @@ on:
 
 jobs:
   Build_RPMs:
+    runs-on: ubuntu-latest
     container:
       image: fedorapackaging/fedora32
       options: -u 1001:1001 --group-add mock --cap-add=SYS_ADMIN --privileged=true -w $PWD -v $PWD:$PWD:rw,z
