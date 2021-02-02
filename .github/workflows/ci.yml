@@ -97,12 +97,12 @@ jobs:
                                make CHROOT_NAME=${{ matrix.distro }} chrootbuild;
                                (cd /var/lib/mock/${{ matrix.distro }}/result/ &&
                                 cp -r . \$OLDPWD/artifacts/${{ matrix.distro }}/);
-                               createrepo artifacts/${{ matrix.distro }}/
+                               createrepo artifacts/${{ matrix.distro }}/;
                                find artifacts/ | xargs ls -ld"
     - name: Show artifacts
-      run: echo "CACHE_KEY=$(date +%j)" >> $GITHUB_ENV
+      run: find artifacts/ | xargs ls -ld
     - uses: actions/upload-artifact@v2
       with:
         name: artifacts
-        path: artifacts
+        path: artifacts/**
         retention-days: 1
