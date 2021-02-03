@@ -1,3 +1,11 @@
+libisal-crypto (2.23.0-1) unstable; urgency=medium
+
+  [ Brian J. Murrell ]
+  * New upstream release
+  * Add usr/lib/*/pkgconfig/* to -dev package
+
+ -- Brian J. Murrell <brian.murrell@intel.com>  Mon, 01 Feb 2021 14:03:52 -0500
+
 libisal-crypto (2.21.0-1) unstable; urgency=medium
 
   [ John Malmberg ]
@@ -5,4 +13,3 @@ libisal-crypto (2.21.0-1) unstable; urgency=medium
   * Experimental build for daos-stack project
 
  -- John Malmberg <john.e.malmberg@intel.com>  Wed, 02 Oct 2019 07:46:00 +0000
-
