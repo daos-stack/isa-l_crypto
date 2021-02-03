@@ -69,8 +69,8 @@ jobs:
         key: daos-${{ env.CACHE_KEY }}-{hash}
         restore-keys: daos-${{ env.CACHE_KEY }}-
     - name: Build Docker Image
-      run: docker build . -f "packaging/Dockerfile.mockbuild-new"
-                          -t mockbuild-new/daos
+      run: docker build . -f "packaging/Dockerfile.mockbuild"
+                          -t mockbuild/daos
                           --build-arg NOBUILD=1
                           --build-arg JENKINS_URL=https://build.hpdd.intel.com/
                           --build-arg UID=1001
@@ -111,7 +111,7 @@ jobs:
                       --privileged=true
                       -w $PWD
                       -v $PWD:$PWD:rw,z
-                      mockbuild-new/daos
+                      mockbuild/daos
                       bash -c "set -ex;
                                id;
                                rm -rf artifacts/${{ matrix.distro }}/;
