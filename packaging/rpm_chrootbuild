@@ -45,4 +45,4 @@ enabled=1\n" >> ~/.config/mock.cfg
 done
 echo "\"\"\"" >> ~/.config/mock.cfg
 
-eval strace -f mock -v --no-bootstrap-chroot -r "$CHROOT_NAME" $MOCK_OPTIONS $RPM_BUILD_OPTIONS "$TARGET"
+eval mock -r "$CHROOT_NAME" $MOCK_OPTIONS $RPM_BUILD_OPTIONS "$TARGET"
