@@ -13,7 +13,7 @@ RUN dnf -y update || echo "Issue with RPM DB, that's fine"
 
 # Basic, convenient
 RUN dnf -y install less htop net-tools which sudo keychain man wget vim || echo "Issue with installing less. That's fine"
-ADD resources/bashrc /root/.bashrc
+ADD packaging/resources/bashrc /root/.bashrc
 
 # Fedora/CentOS/RedHat packaging
 RUN dnf -y install fedora-packager keyutils rpmconf dnf-utils git-all bash-completion Lmod make || echo "Issue with installing fedora-packager. That's fine"
@@ -36,14 +36,14 @@ RUN echo "build ALL=(root) NOPASSWD:ALL" > /etc/sudoers.d/build && \
 # Configure SSH
 RUN mkdir -p $HOME/.ssh && chmod 700 $HOME/.ssh
 RUN ssh-keyscan pkgs.fedoraproject.org > $HOME/.ssh/known_hosts
-ADD resources/ssh-config $HOME/.ssh/config
+ADD packaging/resources/ssh-config $HOME/.ssh/config
 RUN chmod 600 $HOME/.ssh/config $HOME/.ssh/known_hosts
 
 # Set up the packaging environment for the `build` user
-ADD resources/rpmmacros $HOME/.rpmmacros
-ADD resources/bashrc $HOME/.bashrc
-ADD resources/gitconfig $HOME/.gitconfig
-ADD resources/vimrc $HOME/.vimrc
+ADD packaging/resources/rpmmacros $HOME/.rpmmacros
+ADD packaging/resources/bashrc $HOME/.bashrc
+ADD packaging/resources/gitconfig $HOME/.gitconfig
+ADD packaging/resources/vimrc $HOME/.vimrc
 RUN chmod 640 $HOME/.rpmmacros $HOME/.bashrc $HOME/.gitconfig $HOME/.vimrc
 RUN chown -R build.build $HOME
 
