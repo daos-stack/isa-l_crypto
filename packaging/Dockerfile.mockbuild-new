@@ -37,7 +37,7 @@ RUN echo "build ALL=(root) NOPASSWD:ALL" > /etc/sudoers.d/build && \
 RUN mkdir -p $HOME/.ssh && chmod 700 $HOME/.ssh
 #RUN ssh-keyscan pkgs.fedoraproject.org > $HOME/.ssh/known_hosts
 ADD packaging/resources/ssh-config $HOME/.ssh/config
-RUN chmod 600 $HOME/.ssh/config $HOME/.ssh/known_hosts
+#RUN chmod 600 $HOME/.ssh/config $HOME/.ssh/known_hosts
 
 # Set up the packaging environment for the `build` user
 ADD packaging/resources/rpmmacros $HOME/.rpmmacros
