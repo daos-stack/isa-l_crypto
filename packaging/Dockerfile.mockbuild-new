@@ -59,5 +59,8 @@ WORKDIR $HOME/dev
 RUN git clone https://github.com/fedorapackaging/fedorareviews.git
 WORKDIR $HOME/dev/fedora_packaging
 
+# Debugging
+RUN dnf -y install strace
+
 # Entry point
 CMD ["/bin/bash"]
