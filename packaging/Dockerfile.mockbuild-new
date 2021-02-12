@@ -47,6 +47,9 @@ ADD packaging/resources/vimrc $HOME/.vimrc
 RUN chmod 640 $HOME/.rpmmacros $HOME/.bashrc $HOME/.gitconfig $HOME/.vimrc
 RUN chown -R build.build $HOME
 
+# Debugging
+RUN dnf -y install strace
+
 # Switch to the 'build' user
 WORKDIR $HOME
 
@@ -58,9 +61,6 @@ RUN mkdir -p $HOME/dev/fedora_packaging
 WORKDIR $HOME/dev
 RUN git clone https://github.com/fedorapackaging/fedorareviews.git
 WORKDIR $HOME/dev/fedora_packaging
-
-# Debugging
-RUN dnf -y install strace
 
 # Entry point
 CMD ["/bin/bash"]
