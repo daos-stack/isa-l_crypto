@@ -10,9 +10,9 @@
 %define isal_libname libisa-l_crypto
 %define isal_devname libisa-l_crypto-devel
 %endif
-    
-Name:		isa-l_crypto
-Version:	2.23.0
+
+Name:			isa-l_crypto
+Version:	2.24.0
 Release:	1%{?dist}
 
 Summary:	Intelligent Storage Acceleration Library Crypto Version
@@ -23,8 +23,8 @@ Group: Development/Libraries/C and C++
 Group:		Development/Libraries
 %endif
 License:	BSD-3-Clause
-URL:		https://github.com/01org/isa-l_crypto/wiki
-Source0:        https://github.com/01org/%{name}/archive/v%{version}.tar.gz
+URL:			https://github.com/01org/isa-l_crypto/wiki
+Source0:	https://github.com/01org/%{name}/archive/v%{version}.tar.gz
 
 BuildRequires: yasm
 
@@ -46,7 +46,8 @@ targeting storage applications. ISA-L_crypto includes:
 - Multi-buffer hashes - run multiple hash jobs together on one core
 for much better throughput than single-buffer versions. (
 SHA1, SHA256, SHA512, MD5)
-- Multi-hash - Get the performance of multi-buffer hashing with a single-buffer interface.
+- Multi-hash - Get the performance of multi-buffer hashing with a
+  single-buffer interface.
 - Multi-hash + murmur - run both together.
 - AES - block ciphers (XTS, GCM, CBC)
 - Rolling hash - Hash input in a window which moves through the input
@@ -59,6 +60,12 @@ Provides:	%{isal_libname}-static%{?_isa} = %{version}
 %description -n %{isal_devname}
 Development files for the %{isal_libname} library.
 
+%if (0%{?suse_version} > 0)
+%global __debug_package 1
+%global _debuginfo_subpackages 0
+%debug_package
+%endif
+
 %prep
 %autosetup -p1
 
@@ -66,7 +73,7 @@ Development files for the %{isal_libname} library.
 if [ ! -f configure ]; then
     ./autogen.sh --no-oshmem
 fi
-%configure
+%configure --disable-static
 
 %{make_build}
 
@@ -80,7 +87,7 @@ find %{?buildroot} -name *.la -print0 | xargs -r0 rm -f
 %else
 %post -p /sbin/ldconfig
 %postun -p /sbin/ldconfig
-%endif    
+%endif
 
 %files -n %{isal_libname}
 %{_libdir}/*.so.*
@@ -88,10 +95,14 @@ find %{?buildroot} -name *.la -print0 | xargs -r0 rm -f
 %files -n %{isal_devname}
 %{_includedir}/*
 %{_libdir}/*.so
-%{_libdir}/*.a
 %{_libdir}/pkgconfig/libisal_crypto.pc
 
 %changelog
+* Thu Jun 22 2023 Brian J. Murrell <brian.murrell@intel> - 2.24.0-1
+- Update to new version
+- Disable static library build
+- Add debuginfo generation for Leap 15
+
 * Mon Feb 01 2021 Brian J. Murrell <brian.murrell@intel> - 2.23.0-1
 - Update to new version
 - Add %%{_libdir}/pkgconfig/libisal_crypto.pc to -devel package
