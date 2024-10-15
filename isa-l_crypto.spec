@@ -90,9 +90,11 @@ find %{?buildroot} -name *.la -print0 | xargs -r0 rm -f
 %endif
 
 %files -n %{isal_libname}
+%license LICENSE
 %{_libdir}/*.so.*
 
 %files -n %{isal_devname}
+%license LICENSE
 %{_includedir}/*
 %{_libdir}/*.so
 %{_libdir}/pkgconfig/libisal_crypto.pc
